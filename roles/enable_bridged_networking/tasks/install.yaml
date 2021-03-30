@@ -1,0 +1,26 @@
+- name: "Install module-load.d conf file"
+  become: true
+  copy:
+    src: files/module-load.d.conf
+    dest: "{{ moduleloadd_path }}"
+
+- name: "Get module list"
+  set_fact:
+    modules: "{{ lookup('file', 'files/module-load.d.conf') }}"
+
+- name: "Load modules"
+  become: true
+  command:
+    cmd: "modprobe {{ item }}"
+  with_items: "{{ modules.splitlines() }}"
+
+- name: "Install sysctl.d conf file"
+  become: true
+  copy:
+    src: files/sysctl.d.conf
+    dest: "{{ sysctld_path }}"
+
+- name: "Reload sysctl"
+  become: true
+  command:
+    cmd: "sysctl --system"

@@ -1,0 +1,14 @@
+---
+all:
+  hosts:
+    bfiola-pi-cluster-1.local:
+    bfiola-pi-cluster-2.local:
+    bfiola-pi-cluster-3.local:
+  children:
+    kubernetes_primary:
+      hosts:
+        bfiola-pi-cluster-1.local:
+    kubernetes_secondary:
+      hosts:
+        bfiola-pi-cluster-2.local:
+        bfiola-pi-cluster-3.local:

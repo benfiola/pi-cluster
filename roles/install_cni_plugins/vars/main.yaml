@@ -1,0 +1,2 @@
+cni_plugins_url: "https://github.com/containernetworking/plugins/releases/download/v{{cni_plugins_version}}/cni-plugins-linux-arm-v{{cni_plugins_version}}.tgz"
+cni_plugins_directory: "/opt/cni/bin"

@@ -1,0 +1,33 @@
+- name: Get k3s server
+  set_fact:
+    k3s_server: "{{ groups['kubernetes_primary'][0] }}"
+
+- name: "Get k3s server ip address"
+  set_fact:
+    k3s_server_ip_address: "{{ hostvars[k3s_server]['ansible_default_ipv4']['address'] }}"
+
+- name: "Get k3s server token"
+  delegate_to: "{{ k3s_server }}"
+  become: true
+  slurp:
+    src: "/var/lib/rancher/k3s/server/node-token"
+  register: k3s_server_token
+
+- name: "Get k3s server token"
+  set_fact:
+    k3s_server_token: "{{ k3s_server_token['content'] | b64decode | trim }}"
+
+- name: "Running k3s-install.sh"
+  become: true
+  command:
+    cmd: "k3s-install.sh"
+  environment:
+    INSTALL_K3S_VERSION: "{{ k3s_version }}"
+    INSTALL_K3S_EXEC: "agent"
+    K3S_URL: "https://{{ k3s_server_ip_address }}:6443"
+    K3S_TOKEN: "{{ k3s_server_token }}"
+
+- name: "Reboot"
+  become: true
+  reboot:
+

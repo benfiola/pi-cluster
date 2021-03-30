@@ -1,0 +1,12 @@
+- name: "Create CNI plugins directory"
+  become: true
+  file:
+    path: "{{ cni_plugins_directory }}"
+    state: directory
+
+- name: "Install CNI plugins"
+  become: true
+  unarchive:
+    src: "{{ cni_plugins_url }}"
+    dest: "{{ cni_plugins_directory }}"
+    remote_src: yes

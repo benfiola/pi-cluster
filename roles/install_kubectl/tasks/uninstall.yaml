@@ -1,0 +1,6 @@
+
+- name: "Remove kubectl"
+  become: true
+  file:
+    path: "{{kubectl_path}}"
+    state: absent

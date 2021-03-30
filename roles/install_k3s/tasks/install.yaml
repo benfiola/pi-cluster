@@ -1,0 +1,7 @@
+
+- name: "Install k3s-install.sh"
+  become: true
+  get_url:
+    url: "https://raw.githubusercontent.com/k3s-io/k3s/{{k3s_version}}/install.sh"
+    dest: "{{ install_script_path }}"
+    mode: "0755"

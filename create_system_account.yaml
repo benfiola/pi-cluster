@@ -1,0 +1,13 @@
+---
+- hosts: all
+  remote_user: pi
+  vars_prompt:
+    - name: username
+      prompt: Enter username
+      private: false
+    - name: password
+      prompt: Enter password
+      encrypt: sha512_crypt
+      private: true
+  roles:
+    - create_user

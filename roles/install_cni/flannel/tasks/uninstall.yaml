@@ -1,0 +1,10 @@
+- name: "Get manifest"
+  set_fact:
+    flannel_manifest: "{{ lookup('url', flannel_manifest_url, split_lines=False) }}"
+
+- name: "Remove manifests"
+  become: true
+  community.kubernetes.k8s:
+    resource_definition: "{{ flannel_manifest }}"
+    state: absent
+    kubeconfig: "/etc/rancher/k3s/k3s.yaml"

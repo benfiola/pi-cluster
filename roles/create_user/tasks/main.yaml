@@ -1,0 +1,38 @@
+---
+- name: "Check if username set"
+  fail:
+    msg: "Username unset"
+  when: "not username"
+
+- name: "({{ ansible_user_id }}) Get user groups"
+  become: true
+  command:
+    cmd: "groups {{ ansible_user_id }}"
+  register: current_user_groups
+
+- name: "({{ ansible_user_id }}) Get user groups"
+  become: true
+  set_fact:
+    current_user_groups: "{{ current_user_groups.stdout.split()[2:] }}"
+  register: current_user_groups
+
+- name: "({{ username }}) Creating user"
+  become: true
+  user:
+    name: "{{ username }}"
+    password: "{{ password | default(omit) }}"
+    create_home: true
+    state: present
+    groups: "{{ current_user_groups }}"
+  register: user
+
+- name: "({{ user.name }}) Enabling passwordless sudo"
+  become: true
+  lineinfile:
+    path: "/etc/sudoers.d/{{ user.name }}"
+    line: '{{ user.name }} ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    mode: 0440
+    create: yes
+    validate: 'visudo -cf %s'
+  

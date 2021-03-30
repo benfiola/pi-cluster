@@ -1,0 +1,7 @@
+- name: "Install pip"
+  become: true
+  apt:
+    name: 
+      - python-pip
+      - python-setuptools
+    state: present

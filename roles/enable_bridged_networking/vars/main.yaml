@@ -1,0 +1,3 @@
+---
+sysctld_path: "/etc/sysctl.d/99-bridged_networking.conf"
+moduleloadd_path: "/etc/modules-load.d/99-bridged_networking.conf"

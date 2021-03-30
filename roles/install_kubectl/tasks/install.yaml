@@ -1,0 +1,6 @@
+- name: "Install kubectl"
+  become: true
+  get_url:
+    url: "https://dl.k8s.io/release/{{kubectl_version}}/bin/linux/arm/kubectl"
+    dest: "{{kubectl_path}}"
+    mode: "0755"

@@ -1,0 +1,6 @@
+
+- name: "Remove k3s-install.sh"
+  become: true
+  file:
+    path: "{{ install_script_path }}"
+    state: absent

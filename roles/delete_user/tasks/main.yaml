@@ -1,0 +1,12 @@
+---
+- name: "Check if username set"
+  fail:
+    msg: "Username unset"
+  when: "not username"
+
+- name: "({{ username }}) Deleting user"
+  become: true
+  user:
+    name: "{{ username }}"
+    state: absent
+    force: true
