@@ -1,0 +1,15 @@
+- name: set cgroup_memory
+  become: true
+  boot_args:
+    name: cgroup_memory
+    value: 1
+    path: "{{cgroups_cmdline_path}}"
+  notify: [cg | reboot]
+
+- name: set cgroup_enable
+  become: true
+  boot_args:
+    name: cgroup_enable
+    value: [memory, cpuset]
+    path: "{{cgroups_cmdline_path}}"
+  notify: [cg | reboot]

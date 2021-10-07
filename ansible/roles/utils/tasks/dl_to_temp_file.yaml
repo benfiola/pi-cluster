@@ -1,0 +1,12 @@
+- name: create temp file
+  ansible.builtin.tempfile:
+    state: file
+  register: tempfile
+  changed_when: false
+
+- name: download url to temp file
+  ansible.builtin.get_url:
+    url: "{{url}}"
+    dest: "{{tempfile.path}}"
+    mode: a+x
+  changed_when: false

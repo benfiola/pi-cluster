@@ -1,0 +1,13 @@
+#cloud-config
+
+hostname: {{hostname}}
+
+chpasswd:
+    expire: false
+    list:
+    - ubuntu:ubuntu
+
+ssh_pwauth: true
+
+packages:
+- avahi-daemon

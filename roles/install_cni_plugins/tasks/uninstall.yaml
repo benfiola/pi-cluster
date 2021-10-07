@@ -1,5 +1,0 @@
-- name: "Delete CNI plugins directory"
-  become: true
-  file:
-    path: "{{ cni_plugins_directory }}"
-    state: absent

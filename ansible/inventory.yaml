@@ -1,0 +1,13 @@
+all:
+  hosts:
+    bfiola-pi-cluster-1.local:
+    bfiola-pi-cluster-2.local:
+    bfiola-pi-cluster-3.local:
+  children:
+    k3s_server:
+      hosts:
+        bfiola-pi-cluster-1.local:
+    k3s_agent:
+      hosts:
+        bfiola-pi-cluster-2.local:
+        bfiola-pi-cluster-3.local:

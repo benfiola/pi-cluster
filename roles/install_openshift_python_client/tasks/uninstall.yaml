@@ -1,6 +1,0 @@
-- name: "Remove pip packages"
-  become: true
-  pip:
-    name: openshift
-    state: absent
-  

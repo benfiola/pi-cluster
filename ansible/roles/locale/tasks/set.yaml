@@ -1,0 +1,13 @@
+- name: enable locale
+  community.general.locale_gen:
+    name: "{{locale}}"
+    state: present
+
+- name: set locale
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/default/locale
+    regexp: '^LANG='
+    line: LANG={{locale}}
+    state: present
+  

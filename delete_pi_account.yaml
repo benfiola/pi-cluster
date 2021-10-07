@@ -1,7 +1,0 @@
----
-- hosts: all
-  roles:
-    - delete_user
-  vars:
-    username: pi
-

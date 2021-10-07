@@ -1,5 +1,0 @@
-- name: "Install pip packages"
-  become: true
-  pip:
-    name: openshift
-    state: present

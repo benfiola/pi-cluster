@@ -1,0 +1,6 @@
+- import_playbook: ./deploy_bootstrap.yaml
+- import_playbook: ./deploy_k3s.yaml
+- import_playbook: ./deploy_metallb.yaml
+- import_playbook: ./deploy_longhorn.yaml
+- import_playbook: ./deploy_docker_registry.yaml
+- import_playbook: ./deploy_kubernetes_dashboard.yaml

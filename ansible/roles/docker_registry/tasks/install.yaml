@@ -1,0 +1,40 @@
+- name: apply namespace manifest
+  become: true
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{lookup('template', 'templates/namespace.yaml')}}"
+    wait: true
+
+- name: check if secret generated
+  become: true
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: certs
+    namespace: docker-registry
+  register: dr_secret_search
+
+- name: generate secret
+  block:
+  - include_role: {name: utils, tasks_from: generate_cert}
+    vars: {common_name: "{{dr_hostname}}"}
+
+  - name: deploy secret
+    become: true
+    kubernetes.core.k8s:
+      state: present
+      definition: "{{lookup('template', 'templates/secret.yaml')}}"
+      wait: true
+    vars:
+      dr_ca_certificate: "{{certificate_authority}}"
+      dr_ca_key: "{{certificate_authority_key}}"
+      dr_certificate: "{{certificate}}"
+      dr_key: "{{certificate_key}}"
+  when: not dr_secret_search.resources
+
+- name: apply manifest
+  become: true
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{lookup('template', 'templates/manifest.yaml')}}"
+    wait: true

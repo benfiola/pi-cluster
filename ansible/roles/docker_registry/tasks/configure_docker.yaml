@@ -1,0 +1,43 @@
+- name: set server node hostname
+  ansible.builtin.set_fact:
+    k3s_server_hostname: "{{server_hostname}}"
+  vars:
+    server_hostname: "{{groups['k3s_server'][0]}}"
+
+- name: set server node ip address
+  ansible.builtin.set_fact:
+    k3s_server_ip_address: "{{hostvars[k3s_server_hostname]['ansible_default_ipv4']['address']}}"
+
+- name: get certificates
+  delegate_to: "{{k3s_server_ip_address}}"
+  block:
+  - name: get secrets
+    become: true
+    kubernetes.core.k8s_info:
+      api_version: v1
+      kind: Secret
+      name: certs
+      namespace: docker-registry
+    register: dr_secret_search
+
+  - name: set cert facts
+    ansible.builtin.set_fact:
+      dr_ca_certificate: "{{dr_secret_data['ca.crt']}}"
+      dr_ca_key: "{{dr_secret_data['ca.key']}}"
+      dr_certificate: "{{dr_secret_data['tls.crt']}}"
+      dr_key: "{{dr_secret_data['tls.key']}}"
+    vars:
+      dr_secret_data: "{{dr_secret_search['resources'][0]['data']}}"
+
+- name: create docker certs directory
+  become: true
+  file:
+    state: directory
+    path: /etc/docker/certs.d/{{dr_hostname}}
+
+- name: create ca certificate file
+  become: true
+  copy:
+    content: "{{dr_certificate | b64decode}}"
+    remote_src: true
+    dest: /etc/docker/certs.d/{{dr_hostname}}/ca.crt

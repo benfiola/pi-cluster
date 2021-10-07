@@ -1,0 +1,64 @@
+- name: detect docker image
+  become: true
+  community.docker.docker_image_info:
+    name:
+      - "{{mm_image}}:{{mm_version}}"
+  register: docker_image_search
+
+- name: build metallb-mdns
+  block:
+  - name: get architecture 
+    command:
+      cmd: dpkg --print-architecture
+    register: mm_architecture_cmd
+  
+  - name: set architecture
+    ansible.builtin.set_fact:
+      mm_architecture: "{{mm_architecture_cmd.stdout | trim}}"
+  
+  - name: create temporary directory
+    ansible.builtin.tempfile:
+      state: directory
+    register: tempdir
+
+  - name: clone repository
+    ansible.builtin.git:
+      repo: https://github.com/benfiola/metallb-mdns.git
+      version: "{{mm_version}}"
+      dest: "{{tempdir.path}}"
+  
+  - name: build docker image
+    become: true
+    community.docker.docker_image:
+      build:
+        args:
+          BUILDPLATFORM: "linux/{{mm_architecture}}"
+          TARGETPLATFORM: "linux/{{mm_architecture}}"
+          TARGETOS: "linux"
+          TARGETARCH: "{{mm_architecture}}"
+        path: "{{tempdir.path}}"
+      name: "{{mm_image}}"
+      tag: "{{mm_version}}"
+      push: false
+      source: build
+  when: not docker_image_search.images
+
+- name: ensure hosts writable
+  become: true
+  file:
+    path: /etc/avahi/hosts
+    mode: "0777"
+    state: file
+
+- name: apply manifest
+  block:
+  - include_role: {name: utils, tasks_from: dl_to_temp_file}
+    vars: {url: "{{mm_manifest_url}}"}
+    
+  - name: apply manifest
+    become: true
+    kubernetes.core.k8s:
+      state: present
+      src: "{{tempfile.path}}"
+      wait: true
+

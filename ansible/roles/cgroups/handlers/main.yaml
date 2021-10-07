@@ -1,0 +1,3 @@
+- name: cg | reboot
+  become: true
+  reboot:

@@ -1,2 +1,0 @@
----
-flannel_manifest_url: "https://raw.github.com/flannel-io/flannel/v{{ flannel_version }}/Documentation/kube-flannel.yml"
