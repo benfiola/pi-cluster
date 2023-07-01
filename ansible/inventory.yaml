@@ -1,13 +1,29 @@
 all:
+  vars:
+    default_account: ubuntu
+    static_ip_gateway: 192.168.1.1
+    static_ip_nameserver: 192.168.1.1
   hosts:
+    bfiola-pi-dns.local:
+      static_ip_address: 192.168.3.1/21
+      dns_name: bfiola-pi-dns.bulia
     bfiola-pi-cluster-1.local:
+      static_ip_address: 192.168.3.2/21'
+      dns_name: bfiola-pi-cluster-1.bulia
     bfiola-pi-cluster-2.local:
-    bfiola-pi-cluster-3.local:
+      static_ip_address: 192.168.3.3/21
+      dns_name: bfiola-pi-cluster-2.bulia
   children:
-    k3s_server:
+    dns:
       hosts:
-        bfiola-pi-cluster-1.local:
-    k3s_agent:
-      hosts:
-        bfiola-pi-cluster-2.local:
-        bfiola-pi-cluster-3.local:
+        bfiola-pi-dns.local
+    cluster:
+      vars:
+        k3s_version: v1.25.11+k3s1
+      children:
+        cluster_primary:
+          hosts:
+            bfiola-pi-cluster-1.local
+        cluster_secondary:
+          hosts:
+            bfiola-pi-cluster-2.local

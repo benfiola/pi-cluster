@@ -1,0 +1,32 @@
+---
+# NOTE: serial is used to prevent hosts from overwriting each others changes when delegating to the dns server
+- hosts: all
+  serial: true
+  tasks:
+    - name: fail if dns group size greater than 1
+      ansible.builtin.fail:
+        msg: incorect number of hosts in dns group ({{num_hosts}})
+      vars:
+        num_hosts: "{{groups['dns'] | length}}"
+      when: num_hosts != "1"
+    
+    - name: set dns server hostname fact
+      ansible.builtin.set_fact:
+        dns_server: "{{groups['dns'][0]}}"
+
+    - name: add entry to dns server /etc/hosts
+      become: true
+      delegate_to: "{{dns_server}}"
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        regexp: "^.*{{dns_name}}"
+        # NOTE: ip address as configured is <ip address>/mask
+        line: "{{static_ip_address | split('/') | first}} {{dns_name}}"
+      register: etc_hosts
+
+    - name: reload pihole dns
+      become: true
+      delegate_to: "{{dns_server}}"
+      ansible.builtin.shell:
+        cmd: "pihole restartdns reload"
+      when: etc_hosts.changed

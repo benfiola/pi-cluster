@@ -1,0 +1,4 @@
+secretsprovider: gcpkms://projects/general-391523/locations/us-west1/keyRings/pulumi/cryptoKeys/pulumi-secrets
+encryptedkey: CiQADTLVHJ6BTyZy8LUkPRAGD0h0LwRGdZdbR4YpHF/1grAznq0SSQAS10GD465tgVaUrwJFJqkQx1JpISDYd86wp5Sk5lRX2QtOcjAPzeRclOOSHWJ8EAC31oiDbvwxEVtUDxLgE1sx9ryM92DMKAQ=
+config:
+  docker-registry:dnsName: docker-registry.bulia

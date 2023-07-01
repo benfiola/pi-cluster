@@ -1,0 +1,8 @@
+- hosts: all
+  tasks:
+    - name: disable unattended upgrades
+      become: true
+      ansible.builtin.systemd:
+        name: unattended-upgrades
+        enabled: false
+        state: stopped

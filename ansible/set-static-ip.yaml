@@ -1,0 +1,48 @@
+---
+- hosts: all
+  tasks:
+    - name: disable cloud-init networking
+      become: true
+      ansible.builtin.copy: 
+        dest: /etc/cloud/cloud.cfg.d/99-custom-networking.cfg
+        content: |
+          network:
+            config: disabled
+        mode: "0644"
+
+    - name: delete cloud-init generated netplan
+      become: true
+      ansible.builtin.file: 
+        path: /etc/netplan/50-cloud-init.yaml
+        state: absent
+    
+    - name: create netplan configuration
+      become: true
+      ansible.builtin.copy: 
+        dest: /etc/netplan/99-static-ip.yaml
+        content: |
+          network:
+            version: 2
+            ethernets:
+              eth0:
+                optional: true
+                dhcp4: false
+                addresses: [{{static_ip_address}}]
+                routes:
+                  - to: default
+                    via: {{static_ip_gateway}}
+                nameservers:
+                  addresses: [{{static_ip_nameserver}}]
+        mode: "0644"
+      register: netplan_configuration
+
+    - name: generate netplan
+      become: true
+      ansible.builtin.command:
+        cmd: netplan generate
+      when: netplan_configuration.changed
+
+    - name: reboot machine
+      become: true
+      ansible.builtin.reboot: {}
+      when: netplan_configuration.changed

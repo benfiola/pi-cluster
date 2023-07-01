@@ -1,2 +1,0 @@
-mlb_namespace_manifest_url: https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/namespace.yaml
-mlb_manifest_url: https://raw.githubusercontent.com/metallb/metallb/v0.10.2/manifests/metallb.yaml

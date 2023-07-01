@@ -1,5 +1,0 @@
-- name: delete_user | delete user
-  become: true
-  ansible.builtin.user:
-    name: "{{username}}"
-    state: absent

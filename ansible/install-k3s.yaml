@@ -1,0 +1,90 @@
+---
+- hosts: cluster
+  tasks:
+    - name: fail if cluster_primary group size greater than 1
+      ansible.builtin.fail:
+        msg: incorect number of hosts in cluster_primary group ({{num_hosts}})
+      vars:
+        num_hosts: "{{groups['cluster_primary'] | length}}"
+      when: num_hosts != "1"
+
+    # NOTE: this is built on the dangerous assumption that cmdline.txt can be replaced by this play
+    # https://docs.k3s.io/advanced#raspberry-pi
+    - name: set machine cmdline.txt
+      become: true
+      ansible.builtin.copy:
+        dest: /boot/cmdline.txt
+        mode: 0644
+        content: |
+          cgroup_memory=1 cgroup_enable=memory
+      register: cmdline
+
+    # https://docs.k3s.io/advanced#raspberry-pi
+    - name: install vxlan kernel module
+      become: true
+      ansible.builtin.apt:
+        package: linux-modules-extra-raspi
+      register: vxlan
+
+    - name: reboot machine
+      become: true
+      ansible.builtin.reboot: {}
+      when: cmdline.changed or vxlan.changed
+
+    - name: set cluster_primary server hostname fact
+      ansible.builtin.set_fact:
+        primary_server: "{{groups['cluster_primary'][0]}}"
+      
+    - name: set k3s install path facts
+      ansible.builtin.set_fact:
+        k3s_script: /tmp/k3s.sh
+        k3s_bin: /usr/local/bin/k3s
+      
+    - name: download k3s install script
+      ansible.builtin.get_url:
+        url: https://get.k3s.io/
+        dest: "{{k3s_script}}"
+        mode: a+rwx
+        force: true
+
+- hosts: cluster_primary
+  tasks:
+    - name: create k3s token
+      set_fact:
+        k3s_token: "{{lookup('password', '/dev/null length=15 chars=ascii_letters')}}"
+
+    - name: install k3s server
+      ansible.builtin.command:
+        cmd: "{{k3s_script}}"
+        creates: "{{k3s_bin}}"
+      environment:
+        INSTALL_K3S_EXEC: server --disable servicelb --disable local-storage
+        K3S_TOKEN: "{{k3s_token}}"
+
+- hosts: cluster_secondary
+  tasks:
+    - name: read k3s token file
+      delegate_to: "{{primary_server}}"
+      become: true
+      ansible.builtin.slurp:
+        src: /var/lib/rancher/k3s/server/agent-token
+      register: k3s_token_slurp
+
+    - name: set k3s token fact
+      ansible.builtin.set_fact:
+        k3s_token: "{{k3s_token_slurp['content'] | b64decode | trim}}"
+
+    - name: fail if k3s token unset
+      ansible.builtin.fail:
+        msg: "{{k3s_token}}"
+      when: not k3s_token
+
+    - name: install k3s agent
+      ansible.builtin.command:
+        cmd: "{{k3s_script}}"
+        creates: "{{k3s_bin}}"
+      vars:
+        primary_server_hostname: "{{hostvars[primary_server]['dns_name']}}"
+      environment:
+        INSTALL_K3S_EXEC: agent --server https://{{primary_server_hostname}}:6443
+        K3S_TOKEN: "{{k3s_token}}"

@@ -1,4 +1,0 @@
-- hosts: k3s_server
-  tasks:
-  - include_role: {name: metallb, tasks_from: install}
-  - include_role: {name: metallb-mdns, tasks_from: install}

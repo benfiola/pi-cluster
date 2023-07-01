@@ -1,3 +1,0 @@
-- hosts: k3s_server
-  tasks:
-  - include_role: {name: longhorn, tasks_from: install}

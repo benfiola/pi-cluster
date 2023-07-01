@@ -1,6 +1,0 @@
-- hosts: all
-  tasks:
-  - include_role: {name: dependencies, tasks_from: install}
-  - include_role: {name: locale, tasks_from: set}
-  - include_role: {name: timezone, tasks_from: set}
-  - include_role: {name: cgroups, tasks_from: enable}

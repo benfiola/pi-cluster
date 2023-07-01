@@ -1,6 +1,0 @@
-configs:
-  "{{dr_hostname}}":
-    tls:
-      cert_file: "{{dr_certificate_file}}"
-      key_file: "{{dr_key_file}}"
-      ca_file: "{{dr_ca_certificate_file}}"

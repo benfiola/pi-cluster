@@ -1,0 +1,39 @@
+---
+- hosts: all
+  vars_prompt:
+  - name: system_account_username
+    prompt: Enter new system account name
+    private: false
+  - name: system_account_password
+    prompt: Enter new system account password
+    private: true
+    encrypt: sha512_crypt
+    confirm: true
+    salt_size: 7
+  tasks:
+    - name: create new system account
+      become: true
+      ansible.builtin.user:
+        name: "{{system_account_username}}"
+        password: "{{system_account_password}}"
+        create_home: true
+        shell: /bin/bash
+        groups:
+          - adm
+          - dialout
+          - cdrom
+          - floppy
+          - sudo
+          - audio
+          - dip
+          - video
+          - plugdev
+          - netdev
+          - lxd
+
+    - name: enable passwordless sudo
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/90-{{system_account_username}}
+        content: "{{system_account_username}} ALL=(ALL) NOPASSWD: ALL"
+        validate: 'visudo -cf %s'

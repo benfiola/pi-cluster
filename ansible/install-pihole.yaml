@@ -1,0 +1,62 @@
+---
+- hosts: dns
+  tasks:
+    - name: set pihole install path facts
+      ansible.builtin.set_fact:
+        pihole_script: /tmp/pihole.sh
+        pihole_bin: /usr/local/bin/pihole
+      
+    - name: download pihole install script
+      ansible.builtin.get_url:
+        url: https://install.pi-hole.net
+        dest: "{{pihole_script}}"
+        mode: a+rwx
+        force: true
+
+    # pihole installs dnsmasq
+    # systemd-resolved's dns stub resolver conflicts with dnsmasq's
+    - name: disable dns stub listener for systemd-resolved
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/resolved.conf
+        regexp: '^DNSStubListener='
+        line: DNSStubListener=no
+      register: systemd_resolved_configuration
+
+    - name: restart systemd-resolved
+      become: true
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: restarted
+      when: systemd_resolved_configuration.changed
+
+    - name: create pihole configuration folder
+      become: true
+      ansible.builtin.file:
+        path: /etc/pihole
+        state: directory
+      
+    - name: create pihole setup configuration
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/pihole/setupVars.conf
+        content: |
+          WEBPASSWORD=
+          IPV4_ADDRESS={{static_ip_address}}
+          PIHOLE_DNS_1=8.8.8.8
+          PIHOLE_DNS_2=8.8.4.4
+          RATE_LIMIT=0/0
+      register: pihole_configuration
+    
+    - name: run pihole installation
+      become: true
+      ansible.builtin.command:
+        cmd: "{{pihole_script}} --unattended"
+        creates: "{{pihole_bin}}"
+      register: pihole_installation
+      
+    - name: run pihole reconfiguration
+      become: true
+      ansible.builtin.command:
+        cmd: '/etc/.pihole/automated\ install/basic-install.sh --reconfigure --unattended'
+      when: pihole_configuration.changed and not pihole_installation.changed

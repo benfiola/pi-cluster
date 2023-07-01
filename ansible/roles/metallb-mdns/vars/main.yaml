@@ -1,3 +1,0 @@
-mm_image: "bfiola/metallb-mdns"
-mm_version: "1.0.0"
-mm_manifest_url: https://raw.githubusercontent.com/benfiola/metallb-mdns/{{mm_version}}/config/example.yaml

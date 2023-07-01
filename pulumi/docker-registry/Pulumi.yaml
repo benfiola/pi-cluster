@@ -1,0 +1,5 @@
+name: docker-registry
+runtime: nodejs
+main: src/index.ts
+config:
+  pulumi:disable-default-providers: ["*"]

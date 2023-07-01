@@ -1,3 +1,0 @@
-- name: li | reboot
-  become: true
-  reboot:

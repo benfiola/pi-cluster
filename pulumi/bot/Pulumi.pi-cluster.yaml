@@ -1,0 +1,6 @@
+secretsprovider: gcpkms://projects/general-391523/locations/us-west1/keyRings/pulumi/cryptoKeys/pulumi-secrets
+encryptedkey: CiQADTLVHH3YWLrfkdYiwtORXc92Ewle+zh/XK8LYQuWpI/5ha4SSQAS10GDj8mtKen4spZr/Q+imXi6lZGa+euzwtEn7rVppOp21lKfx+PK451+CyY5Zhap3yrqcI5l+frkq24M9zrObWF8mSbyopA=
+config:
+  bot:discordApiToken:
+    secure: v1:tFVur+Hf3eXpR0S6:oGs7hUFvptuHTarau4QkyKwatBXY+K4ZI3MU02iIoLdg2akh5TkUe0mCe3b54r89KEH8JRC8e33svMf9JC/cNuTUprkcBay7MK1hV2Gp/Nd3z/7O+VA=
+  bot:image: "docker-registry.bulia/bfiola/bot:latest"

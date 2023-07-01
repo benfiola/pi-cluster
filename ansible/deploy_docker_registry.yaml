@@ -1,7 +1,0 @@
-- hosts: k3s_server
-  tasks:
-  - include_role: {name: docker_registry, tasks_from: install}
-
-- hosts: all
-  tasks:
-  - include_role: {name: docker_registry, tasks_from: configure_docker}
