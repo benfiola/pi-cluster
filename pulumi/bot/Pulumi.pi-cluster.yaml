@@ -3,4 +3,4 @@ encryptedkey: CiQADTLVHH3YWLrfkdYiwtORXc92Ewle+zh/XK8LYQuWpI/5ha4SSQAS10GDj8mtKe
 config:
   bot:discordApiToken:
     secure: v1:tFVur+Hf3eXpR0S6:oGs7hUFvptuHTarau4QkyKwatBXY+K4ZI3MU02iIoLdg2akh5TkUe0mCe3b54r89KEH8JRC8e33svMf9JC/cNuTUprkcBay7MK1hV2Gp/Nd3z/7O+VA=
-  bot:image: "docker-registry.bulia/bfiola/bot:latest"
+  bot:image: "docker-registry.bulia/bfiola/bot:0.0.1"
