@@ -10,6 +10,10 @@ export = async () => {
   const discordApiToken = new pulumi.Config("bot").requireSecret(
     "discordApiToken"
   );
+  const discordServerId = new pulumi.Config("bot").require("discordServerId");
+  const discordWordleChannelId = new pulumi.Config("bot").require(
+    "discordWordleChannelId"
+  );
 
   const kubernetesProvider = new kubernetes.Provider("kubernetes-provider", {
     kubeconfig,
@@ -111,6 +115,8 @@ export = async () => {
       metadata: { namespace: namespace.metadata.name },
       stringData: {
         BOT_DISCORD_API_TOKEN: discordApiToken,
+        BOT_DISCORD_SERVER_ID: discordServerId,
+        BOT_DISCORD_WORDLE_CHANNEL_ID: discordWordleChannelId,
         BOT_LAVALINK_URL: lavalinkUrl,
       },
     },
