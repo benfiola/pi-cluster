@@ -5,4 +5,4 @@ config:
     secure: v1:tFVur+Hf3eXpR0S6:oGs7hUFvptuHTarau4QkyKwatBXY+K4ZI3MU02iIoLdg2akh5TkUe0mCe3b54r89KEH8JRC8e33svMf9JC/cNuTUprkcBay7MK1hV2Gp/Nd3z/7O+VA=
   bot:discordServerId: "175468283703721984"
   bot:discordWordleChannelId: "932685384830288033"
-  bot:image: "docker-registry.bulia/bfiola/bot:0.0.2"
+  bot:image: "docker-registry.bulia/bfiola/bot:0.0.3"
