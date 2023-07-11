@@ -1,5 +1,7 @@
 name: pi-cluster
 runtime: nodejs
 main: src/index.ts
+backend:
+  url: gs://pulumi-backend-ux08
 config:
   pulumi:disable-default-providers: ["*"]
